@@ -75,9 +75,9 @@ function m.includeFile(node)
 end
 
 function m.getConfig(prj)
-  if _OPTIONS['export-compile-commands-config'] then
-    return project.getconfig(prj, _OPTIONS['export-compile-commands-config'],
-      _OPTIONS['export-compile-commands-platform'])
+  if _OPTIONS['compile-commands-config'] then
+    return project.getconfig(prj, _OPTIONS['compile-commands-config'],
+      _OPTIONS['compile-commands-platform'])
   end
   for cfg in project.eachconfig(prj) do
     -- just use the first configuration which is usually "Debug"
@@ -148,7 +148,7 @@ local function execute()
 end
 
 newaction {
-  trigger = 'export-compile-commands',
+  trigger = 'compile-commands',
   description = 'Export compiler commands in JSON Compilation Database Format',
   execute = execute
 }
