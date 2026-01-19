@@ -21,6 +21,15 @@ function m.getIncludeDirs(cfg)
   return flags
 end
 
+function m.get_forceincludes(cfg)
+  local flags = {}
+  for _, path in ipairs(cfg.forceincludes) do
+    table.insert(flags, '-include ' .. p.quoted(path))
+  end
+  return flags
+end
+
+
 function m.getCommonFlags(cfg)
   local toolset = m.getToolset(cfg)
   local flags = toolset.getcppflags(cfg)
@@ -29,6 +38,7 @@ function m.getCommonFlags(cfg)
   -- can't use toolset.getincludedirs because some tools that consume
   -- compile_commands.json have problems with relative include paths
   flags = table.join(flags, m.getIncludeDirs(cfg))
+  flags = table.join(flags, m.get_forceincludes(cfg))
   flags = table.join(flags, toolset.getcflags(cfg))
   return table.join(flags, cfg.buildoptions)
 end
