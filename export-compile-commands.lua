@@ -67,7 +67,10 @@ function m.generateCompileCommand(prj, cfg, node, filepath)
   }
 end
 
-function m.includeFile(prj, node, depth)
+function m.includeFile(node)
+  if node.abspath == nil then
+    return false
+  end
   return path.iscppfile(node.abspath)
 end
 
@@ -94,7 +97,7 @@ function m.getProjectCommands(prj, cfg)
       node_path = node_path:sub(1, node_path:len()-(node.name:len()+1))
     end,
     onleaf = function(node, depth)
-      if not m.includeFile(prj, node, depth) then
+      if not m.includeFile(node) then
         return
       end
       -- file path that works with my visual studio code generator
