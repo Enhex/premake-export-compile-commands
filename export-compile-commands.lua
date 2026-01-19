@@ -59,10 +59,10 @@ function m.getFileFlags(prj, cfg, node)
   })
 end
 
-function m.generateCompileCommand(prj, cfg, node)
+function m.generateCompileCommand(prj, cfg, node, filepath)
   return {
     directory = prj.location,
-    file = node.abspath,
+    file = filepath,
     command = 'cc '.. table.concat(m.getFileFlags(prj, cfg, node), ' ')
   }
 end
@@ -83,16 +83,26 @@ function m.getConfig(prj)
 end
 
 function m.getProjectCommands(prj, cfg)
-  local tr = project.getsourcetree(prj)
   local cmds = {}
+  local node_path = ''
+  local tr = project.getsourcetree(prj)
   p.tree.traverse(tr, {
+    onbranchenter = function(node, depth)
+      node_path = node_path .. '/' .. node.name
+    end,
+    onbranchexit = function(node, depth)
+      node_path = node_path:sub(1, node_path:len()-(node.name:len()+1))
+    end,
     onleaf = function(node, depth)
       if not m.includeFile(prj, node, depth) then
         return
       end
-      table.insert(cmds, m.generateCompileCommand(prj, cfg, node))
+      -- file path that works with my visual studio code generator
+      local filepath = '.' .. node_path ..'/'.. node.name
+      table.insert(cmds, m.generateCompileCommand(prj, cfg, node, filepath))
     end
-  })
+  }, true)
+
   return cmds
 end
 
