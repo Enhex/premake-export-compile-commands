@@ -30,7 +30,7 @@ function m.get_forceincludes(cfg)
 end
 
 
-function m.getCommonFlags(cfg)
+function m.getCommonFlags(prj, cfg)
   local toolset = m.getToolset(cfg)
   local flags = toolset.getcppflags(cfg)
   flags = table.join(flags, toolset.getdefines(cfg.defines))
@@ -39,7 +39,11 @@ function m.getCommonFlags(cfg)
   -- compile_commands.json have problems with relative include paths
   flags = table.join(flags, m.getIncludeDirs(cfg))
   flags = table.join(flags, m.get_forceincludes(cfg))
-  flags = table.join(flags, toolset.getcflags(cfg))
+  if p.project.isc(prj) then
+    flags = table.join(flags, toolset.getcflags(cfg))
+  elseif p.project.iscpp(prj) then
+    flags = table.join(flags, toolset.getcxxflags(cfg))
+  end
   return table.join(flags, cfg.buildoptions)
 end
 
@@ -52,7 +56,7 @@ function m.getDependenciesPath(prj, cfg, node)
 end
 
 function m.getFileFlags(prj, cfg, node)
-  return table.join(m.getCommonFlags(cfg), {
+  return table.join(m.getCommonFlags(prj, cfg), {
     '-o', m.getObjectPath(prj, cfg, node),
     '-MF', m.getDependenciesPath(prj, cfg, node),
     '-c', node.abspath
