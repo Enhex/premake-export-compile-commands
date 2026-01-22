@@ -91,22 +91,13 @@ end
 
 function m.getProjectCommands(prj, cfg)
   local cmds = {}
-  local node_path = ''
   local tr = project.getsourcetree(prj)
   p.tree.traverse(tr, {
-    onbranchenter = function(node, depth)
-      node_path = node_path .. '/' .. node.name
-    end,
-    onbranchexit = function(node, depth)
-      node_path = node_path:sub(1, node_path:len()-(node.name:len()+1))
-    end,
     onleaf = function(node, depth)
       if not m.includeFile(node) then
         return
       end
-      -- file path that works with my visual studio code generator
-      local filepath = '.' .. node_path ..'/'.. node.name
-      table.insert(cmds, m.generateCompileCommand(prj, cfg, node, filepath))
+      table.insert(cmds, m.generateCompileCommand(prj, cfg, node, node.abspath))
     end
   }, true)
 
