@@ -123,11 +123,11 @@ local function execute()
         for i = 1, #cmds do
           local item = cmds[i]
           local command = string.format([[
-          {
-            "directory": "%s",
-            "file": "%s",
-            "command": "%s"
-          }]],
+{
+"directory": "%s",
+"file": "%s",
+"command": "%s"
+}]],
           item.directory,
           item.file,
           item.command:gsub('\\', '\\\\'):gsub('"', '\\"'))
